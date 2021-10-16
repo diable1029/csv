@@ -1,0 +1,79 @@
+import smtplib
+import getpass
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
+
+while True: 
+    print("-----------------------------")
+    print("Selamat datang di Program Pengirim Email!")
+    print()
+    print("---Menu---")
+    print("1. Daftar Email")
+    print("2. Tambah Email")
+    print("3. Mengirim Email")
+    print("4. Keluar")
+    print()
+    menu=input("Piih Menu: ")
+    print()
+
+    if menu=='2':
+        print("Masukkan Email Baru ")
+        print("-----------------------------")
+        Email= input(str("Email:  "))
+        with open('receiver_list.txt', 'a') as filex:
+               filex.write(Email)
+               filex.write('\n')
+        print()
+        print("Email berhasil ditambahkan")
+    elif menu == '1':
+            print("Daftar Email ")
+            print("-----------------------------")
+            with open('receiver_list.txt', 'r') as filex:
+                 Daftar = filex.read()
+                 print(Daftar)
+
+    elif menu == '3':
+        print("Silahkan Login Terlebih ")
+        gmail_user=input(str("Masukkan akun gmail: "))
+        gmail_app_password=input(str("Masukkan password gmail: "))
+
+        msg=MIMEMultipart()
+        msg['From']=gmail_user
+        msg['Subject']=input("Masukkan Subjek pesan: ")
+        body=input("Masukkan Isi pesan: ")
+
+
+        with open('receiver_list.txt', 'r') as filex:
+	        penerima=filex.readlines()
+       
+        i = 0
+        while i < len(penerima):
+            receiver=f"{penerima[i]}"
+            msg['To']=receiver
+            msg.attach(MIMEText(body, 'plain'))
+           
+            try:          
+                server=smtplib.SMTP_SSL('smtp.gmail.com', 465)
+                server.ehlo()
+                server.login(gmail_user, gmail_app_password)
+                text=msg.as_string()
+                server.sendmail(gmail_user, receiver, text)
+                server.quit()
+
+                print('Email sent!')
+            except Exception as exception:
+                print("Error: %s!\n\n" % exception)
+            i += 1
+            if Exception:
+                continue
+            
+
+    elif menu=='4':
+        print("-----------------------------")
+        print("Program selesai, sampai jumpa!")
+        break
+    else : 
+        print("-----------------------------")
+        print("Menu tidak tersedia")
